@@ -1,2 +1,2 @@
-# Designing-And-Developing-for-CT-NG
+Learm from https://github.com/WHJWNAVY/EasyArm_uboot.git
 
