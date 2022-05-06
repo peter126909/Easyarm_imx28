@@ -1,3 +1,3 @@
-#Learm from https://github.com/WHJWNAVY/EasyArm_uboot.git
+#Learn from https://github.com/WHJWNAVY/EasyArm_uboot.git
 
-about imx28x
+about imx287
