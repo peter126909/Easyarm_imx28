@@ -1,0 +1,232 @@
+diff -Naru /home/fmsh/u-boot-v2020.10/arch/arm/cpu/arm926ejs/mxs/spl_mem_init.c u-boot-v2020.10/arch/arm/cpu/arm926ejs/mxs/spl_mem_init.c
+--- /home/fmsh/u-boot-v2020.10/arch/arm/cpu/arm926ejs/mxs/spl_mem_init.c	2020-10-05 15:15:32.000000000 +0000
++++ u-boot-v2020.10/arch/arm/cpu/arm926ejs/mxs/spl_mem_init.c	2022-05-06 03:30:02.833262348 +0000
+@@ -29,12 +29,12 @@
+ 	0x00000000, 0x00000100, 0x00000000, 0x00000000,
+ 	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+ 	0x00000000, 0x00000000, 0x00010101, 0x01010101,
+-	0x000f0f01, 0x0f02020a, 0x00000000, 0x00010101,
++	0x000f0f01, 0x0102020a, 0x00000000, 0x00010101,
+ 	0x00000100, 0x00000100, 0x00000000, 0x00000002,
+-	0x01010000, 0x07080403, 0x06005003, 0x0a0000c8,
+-	0x02009c40, 0x0002030c, 0x0036a609, 0x031a0612,
+-	0x02030202, 0x00c8001c, 0x00000000, 0x00000000,
+-	0x00012100, 0xffff0303, 0x00012100, 0xffff0303,
++	0x01010000, 0x07080403, 0x07008603, 0x110000C8,
++	0x0201046B, 0x00020202, 0x005B260F, 0x022B0A22,
++	0x03050304, 0x00C8002E, 0x00000000, 0x00000000,
++	0x00011900, 0xffff0303, 0x00012100, 0xffff0303,
+ 	0x00012100, 0xffff0303, 0x00012100, 0xffff0303,
+ 	0x00000003, 0x00000000, 0x00000000, 0x00000000,
+ 	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+@@ -63,12 +63,12 @@
+ 	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+ 	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+ 	0x00000000, 0x00000000, 0x00010000, 0x00030404,
+-	0x00000003, 0x00000000, 0x00000000, 0x00000000,
++	0x00000004, 0x00000000, 0x00000000, 0x00000000,
+ 	0x00000000, 0x00000000, 0x00000000, 0x01010000,
+ 	0x01000000, 0x03030000, 0x00010303, 0x01020202,
+-	0x00000000, 0x02040303, 0x21002103, 0x00061200,
+-	0x06120612, 0x04420442, 0x04420442, 0x00040004,
+-	0x00040004, 0x00000000, 0x00000000, 0x00000000,
++	0x00000000, 0x02050303, 0x21002103, 0x00061200,
++	0x06120612, 0x04420442, 0x00000000, 0x00040004,
++	0x00000000, 0x00000000, 0x00000000, 0x00000000,
+ 	0x00000000, 0xffffffff
+ 
+ /*
+diff -Naru /home/fmsh/u-boot-v2020.10/arch/arm/cpu/arm926ejs/mxs/spl_power_init.c u-boot-v2020.10/arch/arm/cpu/arm926ejs/mxs/spl_power_init.c
+--- /home/fmsh/u-boot-v2020.10/arch/arm/cpu/arm926ejs/mxs/spl_power_init.c	2020-10-05 15:15:32.000000000 +0000
++++ u-boot-v2020.10/arch/arm/cpu/arm926ejs/mxs/spl_power_init.c	2022-05-06 03:38:49.969284722 +0000
+@@ -752,7 +752,7 @@
+ 		POWER_5VCTRL_CHARGE_4P2_ILIMIT_MASK,
+ 		0x8 << POWER_5VCTRL_CHARGE_4P2_ILIMIT_OFFSET);
+ 
+-	mxs_power_enable_4p2();
++	//mxs_power_enable_4p2();//easyarm dont need
+ }
+ 
+ /**
+@@ -1244,7 +1244,7 @@
+ 	mxs_ungate_power();
+ 
+ 	mxs_power_clock2xtal();
+-	mxs_power_set_auto_restart();
++	//mxs_power_set_auto_restart();//rtc dont need
+ 	mxs_power_set_linreg();
+ 	mxs_power_setup_5v_detect();
+ 
+diff -Naru /home/fmsh/u-boot-v2020.10/arch/arm/cpu/arm926ejs/mxs/u-boot-imx28.bd u-boot-v2020.10/arch/arm/cpu/arm926ejs/mxs/u-boot-imx28.bd
+--- /home/fmsh/u-boot-v2020.10/arch/arm/cpu/arm926ejs/mxs/u-boot-imx28.bd	2020-10-05 15:15:32.000000000 +0000
++++ u-boot-v2020.10/arch/arm/cpu/arm926ejs/mxs/u-boot-imx28.bd	2022-05-06 07:02:18.277063232 +0000
+@@ -1,14 +1,14 @@
+ sources {
+-	u_boot_spl="spl/u-boot-spl.bin";
+-	u_boot="u-boot.bin";
++	u_boot_spl="spl/u-boot-spl";
++	u_boot="u-boot";
+ }
+ 
+ section (0) {
+-	load u_boot_spl > 0x0000;
+-	load ivt (entry = 0x0014) > 0x8000;
++	load u_boot_spl;
++	load ivt (entry = u_boot_spl:_start) > 0x8000;
+ 	hab call 0x8000;
+ 
+-	load u_boot > 0x40000100;
+-	load ivt (entry = 0x40000100) > 0x8000;
++	load u_boot;
++	load ivt (entry = u_boot:_start) > 0x8000;
+ 	hab call 0x8000;
+ }
+diff -Naru /home/fmsh/u-boot-v2020.10/board/freescale/mx28evk/iomux.c u-boot-v2020.10/board/freescale/mx28evk/iomux.c
+--- /home/fmsh/u-boot-v2020.10/board/freescale/mx28evk/iomux.c	2020-10-05 15:15:32.000000000 +0000
++++ u-boot-v2020.10/board/freescale/mx28evk/iomux.c	2022-05-06 06:28:18.692976662 +0000
+@@ -22,28 +22,30 @@
+ 
+ const iomux_cfg_t iomux_setup[] = {
+ 	/* DUART */
+-	MX28_PAD_PWM0__DUART_RX,
+-	MX28_PAD_PWM1__DUART_TX,
++	MX28_PAD_PWM0__GPIO_3_16,/* solve the conflict with DUART */
++	MX28_PAD_PWM1__GPIO_3_17,
++	MX28_PAD_AUART0_CTS__DUART_RX,
++	MX28_PAD_AUART0_RTS__DUART_TX,
+ 
+ 	/* MMC0 */
+ 	MX28_PAD_SSP0_DATA0__SSP0_D0 | MUX_CONFIG_SSP0,
+ 	MX28_PAD_SSP0_DATA1__SSP0_D1 | MUX_CONFIG_SSP0,
+ 	MX28_PAD_SSP0_DATA2__SSP0_D2 | MUX_CONFIG_SSP0,
+ 	MX28_PAD_SSP0_DATA3__SSP0_D3 | MUX_CONFIG_SSP0,
+-	MX28_PAD_SSP0_DATA4__SSP0_D4 | MUX_CONFIG_SSP0,
++	/*MX28_PAD_SSP0_DATA4__SSP0_D4 | MUX_CONFIG_SSP0,
+ 	MX28_PAD_SSP0_DATA5__SSP0_D5 | MUX_CONFIG_SSP0,
+ 	MX28_PAD_SSP0_DATA6__SSP0_D6 | MUX_CONFIG_SSP0,
+-	MX28_PAD_SSP0_DATA7__SSP0_D7 | MUX_CONFIG_SSP0,
++	MX28_PAD_SSP0_DATA7__SSP0_D7 | MUX_CONFIG_SSP0,*/
+ 	MX28_PAD_SSP0_CMD__SSP0_CMD | MUX_CONFIG_SSP0,
+ 	MX28_PAD_SSP0_DETECT__SSP0_CARD_DETECT |
+ 		(MXS_PAD_8MA | MXS_PAD_3V3 | MXS_PAD_NOPULL),
+ 	MX28_PAD_SSP0_SCK__SSP0_SCK |
+ 		(MXS_PAD_12MA | MXS_PAD_3V3 | MXS_PAD_NOPULL),
+ 	/* write protect */
+-	MX28_PAD_SSP1_SCK__GPIO_2_12,
++	//MX28_PAD_SSP1_SCK__GPIO_2_12,
+ 	/* MMC0 slot power enable */
+-	MX28_PAD_PWM3__GPIO_3_28 |
+-		(MXS_PAD_12MA | MXS_PAD_3V3 | MXS_PAD_PULLUP),
++	//MX28_PAD_PWM3__GPIO_3_28 |
++		//(MXS_PAD_12MA | MXS_PAD_3V3 | MXS_PAD_PULLUP),
+ 
+ #ifdef CONFIG_NAND_MXS
+ 	/* GPMI NAND */
+@@ -76,19 +78,20 @@
+ 	MX28_PAD_ENET0_TXD1__ENET0_TXD1 | MUX_CONFIG_ENET,
+ 	MX28_PAD_ENET_CLK__CLKCTRL_ENET | MUX_CONFIG_ENET,
+ 	/* FEC0 Enable */
+-	MX28_PAD_SSP1_DATA3__GPIO_2_15 |
+-		(MXS_PAD_12MA | MXS_PAD_3V3),
++	//MX28_PAD_SSP1_DATA3__GPIO_2_15 |
++		//(MXS_PAD_12MA | MXS_PAD_3V3),
+ 	/* FEC0 Reset */
+-	MX28_PAD_ENET0_RX_CLK__GPIO_4_13 |
++	//MX28_PAD_ENET0_RX_CLK__GPIO_4_13 |
++	MX28_PAD_LCD_RS__GPIO_1_26 |
+ 		(MXS_PAD_12MA | MXS_PAD_3V3 | MXS_PAD_PULLUP),
+ 
+ 	/* FEC1 */
+-	MX28_PAD_ENET0_COL__ENET1_TX_EN | MUX_CONFIG_ENET,
++	/*MX28_PAD_ENET0_COL__ENET1_TX_EN | MUX_CONFIG_ENET,
+ 	MX28_PAD_ENET0_CRS__ENET1_RX_EN | MUX_CONFIG_ENET,
+ 	MX28_PAD_ENET0_RXD2__ENET1_RXD0 | MUX_CONFIG_ENET,
+ 	MX28_PAD_ENET0_RXD3__ENET1_RXD1 | MUX_CONFIG_ENET,
+ 	MX28_PAD_ENET0_TXD2__ENET1_TXD0 | MUX_CONFIG_ENET,
+-	MX28_PAD_ENET0_TXD3__ENET1_TXD1 | MUX_CONFIG_ENET,
++	MX28_PAD_ENET0_TXD3__ENET1_TXD1 | MUX_CONFIG_ENET,*/
+ 
+ 	/* EMI */
+ 	MX28_PAD_EMI_D00__EMI_DATA0 | MUX_CONFIG_EMI,
+@@ -109,7 +112,7 @@
+ 	MX28_PAD_EMI_D15__EMI_DATA15 | MUX_CONFIG_EMI,
+ 	MX28_PAD_EMI_ODT0__EMI_ODT0 | MUX_CONFIG_EMI,
+ 	MX28_PAD_EMI_DQM0__EMI_DQM0 | MUX_CONFIG_EMI,
+-	MX28_PAD_EMI_ODT1__EMI_ODT1 | MUX_CONFIG_EMI,
++	//MX28_PAD_EMI_ODT1__EMI_ODT1 | MUX_CONFIG_EMI,
+ 	MX28_PAD_EMI_DQM1__EMI_DQM1 | MUX_CONFIG_EMI,
+ 	MX28_PAD_EMI_DDR_OPEN_FB__EMI_DDR_OPEN_FEEDBACK | MUX_CONFIG_EMI,
+ 	MX28_PAD_EMI_CLK__EMI_CLK | MUX_CONFIG_EMI,
+@@ -139,7 +142,7 @@
+ 	MX28_PAD_EMI_RASN__EMI_RASN | MUX_CONFIG_EMI,
+ 	MX28_PAD_EMI_WEN__EMI_WEN | MUX_CONFIG_EMI,
+ 	MX28_PAD_EMI_CE0N__EMI_CE0N | MUX_CONFIG_EMI,
+-	MX28_PAD_EMI_CE1N__EMI_CE1N | MUX_CONFIG_EMI,
++	//MX28_PAD_EMI_CE1N__EMI_CE1N | MUX_CONFIG_EMI,
+ 	MX28_PAD_EMI_CKE__EMI_CKE | MUX_CONFIG_EMI,
+ 
+ 	/* SPI2 (for SPI flash) */
+diff -Naru /home/fmsh/u-boot-v2020.10/board/freescale/mx28evk/mx28evk.c u-boot-v2020.10/board/freescale/mx28evk/mx28evk.c
+--- /home/fmsh/u-boot-v2020.10/board/freescale/mx28evk/mx28evk.c	2020-10-05 15:15:32.000000000 +0000
++++ u-boot-v2020.10/board/freescale/mx28evk/mx28evk.c	2022-05-06 06:31:14.500984124 +0000
+@@ -113,12 +113,12 @@
+ 	       &clkctrl_regs->hw_clkctrl_enet);
+ 
+ 	/* Power-on FECs */
+-	gpio_direction_output(MX28_PAD_SSP1_DATA3__GPIO_2_15, 0);
++	//gpio_direction_output(MX28_PAD_SSP1_DATA3__GPIO_2_15, 0);
+ 
+ 	/* Reset FEC PHYs */
+-	gpio_direction_output(MX28_PAD_ENET0_RX_CLK__GPIO_4_13, 0);
++	gpio_direction_output(MX28_PAD_LCD_RS__GPIO_1_26, 0);
+ 	udelay(200);
+-	gpio_set_value(MX28_PAD_ENET0_RX_CLK__GPIO_4_13, 1);
++	gpio_set_value(MX28_PAD_LCD_RS__GPIO_1_26, 1);
+ 
+ 	ret = fecmxc_initialize_multi(bis, 0, 0, MXS_ENET0_BASE);
+ 	if (ret) {
+@@ -126,11 +126,11 @@
+ 		return ret;
+ 	}
+ 
+-	ret = fecmxc_initialize_multi(bis, 1, 3, MXS_ENET1_BASE);
++	/*ret = fecmxc_initialize_multi(bis, 1, 3, MXS_ENET1_BASE);
+ 	if (ret) {
+ 		puts("FEC MXS: Unable to init FEC1\n");
+ 		return ret;
+-	}
++	}*/
+ 
+ 	dev = eth_get_dev_by_name("FEC0");
+ 	if (!dev) {
+@@ -138,11 +138,11 @@
+ 		return -EINVAL;
+ 	}
+ 
+-	dev = eth_get_dev_by_name("FEC1");
++	/*dev = eth_get_dev_by_name("FEC1");
+ 	if (!dev) {
+ 		puts("FEC MXS: Unable to get FEC1 device entry\n");
+ 		return -EINVAL;
+-	}
++	}*/
+ 
+ 	return ret;
+ }
+diff -Naru /home/fmsh/u-boot-v2020.10/build.sh u-boot-v2020.10/build.sh
+--- /home/fmsh/u-boot-v2020.10/build.sh	1970-01-01 00:00:00.000000000 +0000
++++ u-boot-v2020.10/build.sh	2022-05-06 07:24:15.205119129 +0000
+@@ -0,0 +1,13 @@
++#!/bin/bash
++
++
++#export WORK_BASE=/home/work/easyarm280
++export ARCH=arm
++#source /home/fmsh/toolchain/arm-imx28-linux-gnueabi/bin/arm-imx28-linux-gnueabi-
++export CROSS_COMPILE=arm-imx28-linux-gnueabi-
++export CROSS_COMPILE_DIR=/home/fmsh/toolchain/arm-imx28-linux-gnueabi/bin
++export PATH=${CROSS_COMPILE_DIR}:$PATH
++make mx28evk_defconfig
++make -j4 spl/u-boot-spl
++make -j4 u-boot
++elftosb -f imx28 -c arch/arm/cpu/arm926ejs/mxs/u-boot-imx28.bd -o u-boot.sb
